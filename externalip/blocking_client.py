@@ -1,4 +1,5 @@
 from contextlib import closing
+from datetime import timedelta, datetime
 import socket
 import select
 
@@ -29,7 +30,7 @@ def accept_connection(listeningSocket):
     return connection
 
 
-def do_loop(listeningSocket, connectingSocket):
+def do_loop(listeningSocket, connectingSocket, timeout=5):
     port = listeningSocket.getsockname()[1]
 
     to_read = [listeningSocket]
@@ -37,7 +38,11 @@ def do_loop(listeningSocket, connectingSocket):
 
     received_buffer = ''
 
+    start_time = datetime.now()
     while True:
+        if datetime.now() - start_time > timedelta(seconds=timeout):
+            return None
+
         reading, writing, exc = select.select(to_read, to_write , to_read + to_write, 0.1)
         for sock in reading:
             if sock is listeningSocket:

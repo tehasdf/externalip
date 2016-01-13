@@ -3,7 +3,7 @@ import sys
 
 from twisted.internet import reactor
 from twisted.internet.endpoints import clientFromString, TCP4ClientEndpoint, TCP4ServerEndpoint, connectProtocol
-from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
+from twisted.internet.defer import inlineCallbacks, Deferred, returnValue, CancelledError
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineOnlyReceiver
 from twisted.python import log
@@ -54,10 +54,16 @@ def sendQuery(server, port):
 
 
 @inlineCallbacks
-def getExternalIP(reactor=reactor, server='tcp:127.0.0.1:10050'):
+def getExternalIP(reactor=reactor, server='tcp:127.0.0.1:10050', timeout=5):
     endpoint = _getClientEndpoint(reactor, server)
 
     response, port = yield makeServer(reactor)
+    reactor.callLater(timeout, response.cancel)
     yield sendQuery(endpoint, port)
-    addr = yield response
+
+    try:
+        addr = yield response
+    except CancelledError:
+        returnValue(None)
+
     returnValue(addr)
