@@ -50,5 +50,3 @@ def test_ipgetter_receives_garbage(mock_ipsender):
 
     assert mock_ipsender._sendTo is None
     assert mock_transport.connectionLost == True
-
-

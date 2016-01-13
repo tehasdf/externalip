@@ -12,7 +12,7 @@ from externalip._twisted_utils import ArgumentsFactory, LineSender
 
 
 def _getClientEndpoint(reactor, server):
-    if isinstance(server, basestring):
+    if isinstance(server, str):
         return clientFromString(reactor, server)
     else:
         host, port = server
@@ -20,7 +20,7 @@ def _getClientEndpoint(reactor, server):
 
 
 class IPReceiver(LineOnlyReceiver):
-    delimiter = '\n'
+    delimiter = b'\n'
     def __init__(self, finished):
         self.finished = finished
 
@@ -49,7 +49,7 @@ def makeServer(reactor):
 
 
 def sendQuery(server, port):
-    proto = LineSender('%s' % (port, ))
+    proto = LineSender(str(port).encode('ascii'))
     return connectProtocol(server, proto).addCallback(lambda proto: proto.finished)
 
 
@@ -66,4 +66,4 @@ def getExternalIP(reactor=reactor, server='tcp:127.0.0.1:10050', timeout=5):
     except CancelledError:
         returnValue(None)
 
-    returnValue(addr)
+    returnValue(addr.decode('ascii'))

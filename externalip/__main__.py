@@ -1,16 +1,6 @@
+from __future__ import print_function
 
-import sys
-
-from twisted.internet import reactor
-from twisted.python import log
-from twisted.internet.task import react
-
-from externalip.twisted_client import getExternalIP
+from externalip.blocking_client import get_external_ip
 
 
-def report(addr):
-    print addr
-
-@react
-def main(reactor):
-    return getExternalIP(reactor).addCallback(report)
+print(get_external_ip('127.0.0.1:10050'))

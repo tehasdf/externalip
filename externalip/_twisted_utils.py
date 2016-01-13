@@ -15,7 +15,8 @@ class ArgumentsFactory(Factory):
 
 
 class LineSender(LineOnlyReceiver):
-    delimiter = '\n'
+    delimiter = b'\n'
+
     def __init__(self, _line):
         self._line = _line
         self.finished = Deferred()

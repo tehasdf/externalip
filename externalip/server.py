@@ -15,12 +15,12 @@ class IPSender(object):
 
     def sendIP(self, host, port):
         endpoint = TCP4ClientEndpoint(self._reactor, host, port)
-        senderProto = LineSender(host)
+        senderProto = LineSender(host.encode('ascii'))
         connectProtocol(endpoint, senderProto)
 
 
 class IPGetter(LineOnlyReceiver):
-    delimiter = '\n'
+    delimiter = b'\n'
     def __init__(self, sender):
         self._sender = sender
 

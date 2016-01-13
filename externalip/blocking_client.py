@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from contextlib import closing
 from datetime import timedelta, datetime
 import socket
@@ -5,7 +7,7 @@ import select
 
 
 def parse_server(server):
-    if isinstance(server, basestring):
+    if isinstance(server, str):
         host, _, port = server.partition(':')
         if not port:
             port = 10050
@@ -36,7 +38,7 @@ def do_loop(listeningSocket, connectingSocket, timeout=5):
     to_read = [listeningSocket]
     to_write = [connectingSocket]
 
-    received_buffer = ''
+    received_buffer = u''
 
     start_time = datetime.now()
     while True:
@@ -51,14 +53,14 @@ def do_loop(listeningSocket, connectingSocket, timeout=5):
             else:
                 data = sock.recv(1024)
                 if data:
-                    received_buffer += data
+                    received_buffer += data.decode('ascii')
                 else:
                     sock.close()
                     to_read.remove(sock)
                     return received_buffer.strip()
 
         for sock in writing:
-            sock.send('%s\n' % (port, ))
+            sock.send(u'{}\n'.format(port).encode('ascii'))
             sock.close()
             to_write.remove(sock)
 
@@ -73,4 +75,4 @@ def get_external_ip(server):
 
 
 if __name__ == '__main__':
-    print get_external_ip(('127.0.0.1', 10050))
+    print(get_external_ip(('127.0.0.1', 10050)))
