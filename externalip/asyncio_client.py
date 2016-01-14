@@ -33,7 +33,7 @@ class Listener(object):
 
 
 @asyncio.coroutine
-def get_external_ip(loop, server=('127.0.0.1', 10050)):
+def get_external_ip(loop, server=('127.0.0.1', 10050), timeout=5):
     host, port = server
 
     reader, writer = yield from asyncio.open_connection(host, port)
@@ -45,13 +45,19 @@ def get_external_ip(loop, server=('127.0.0.1', 10050)):
 
     listening_port = yield from listener.listening_port
     writer.write(u'{}\n'.format(listening_port).encode('ascii'))
-    ip = yield from listener.received_ip
 
-
-    print(ip)
+    canceller = loop.call_later(timeout, listener.received_ip.cancel)
+    try:
+        ip = yield from listener.received_ip
+    except asyncio.CancelledError:
+        ip = None
+    else:
+        canceller.cancel()
+    return ip
 
 if __name__ == '__main__':
     server = ('127.0.0.1', 10050)
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(get_external_ip(loop, server))
+    ip = loop.run_until_complete(get_external_ip(loop, server))
     loop.close()
+    print(ip)
