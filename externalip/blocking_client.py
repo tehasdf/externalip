@@ -65,14 +65,23 @@ def do_loop(listeningSocket, connectingSocket, timeout=5):
             to_write.remove(sock)
 
 
-def get_external_ip(server):
+def get_external_ip(server, timeout):
+    """Connect to the remote server, wait for it to respond with our IP
+
+    Args:
+        server (tuple): the server address of (host, port)
+        timeout (float): seconds to wait before giving up
+
+    Returns:
+        str: our external ip in dotted format, or None
+    """
     server = parse_server(server)
 
     with closing(makeServerSocket()) as listeningSocket,\
             closing(socket.create_connection(server)) as connectingSocket:
 
-        return do_loop(listeningSocket, connectingSocket)
+        return do_loop(listeningSocket, connectingSocket, timeout)
 
 
 if __name__ == '__main__':
-    print(get_external_ip(('127.0.0.1', 10050)))
+    print(get_external_ip(('46.101.132.244', 10050)))

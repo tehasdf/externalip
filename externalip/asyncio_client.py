@@ -33,7 +33,19 @@ class Listener(object):
 
 
 @asyncio.coroutine
-def get_external_ip(loop, server=('127.0.0.1', 10050), timeout=5):
+def get_external_ip(loop, server=('46.101.132.244', 10050), timeout=5):
+    """Connect to the remote server, wait for it to respond with our IP
+
+    Nb. this is a coroutine.
+
+    Args:
+        loop : asyncio event loop
+        server (tuple): the server address of (host, port)
+        timeout (float): seconds to wait before giving up
+
+    Returns:
+        str: our external ip in dotted format, or None
+    """
     host, port = server
 
     reader, writer = yield from asyncio.open_connection(host, port)
@@ -55,8 +67,9 @@ def get_external_ip(loop, server=('127.0.0.1', 10050), timeout=5):
         canceller.cancel()
     return ip
 
+
 if __name__ == '__main__':
-    server = ('127.0.0.1', 10050)
+    server = ('46.101.132.244', 10050)
     loop = asyncio.get_event_loop()
     ip = loop.run_until_complete(get_external_ip(loop, server))
     loop.close()

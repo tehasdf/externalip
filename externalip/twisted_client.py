@@ -54,7 +54,20 @@ def sendQuery(server, port):
 
 
 @inlineCallbacks
-def getExternalIP(reactor=reactor, server='tcp:127.0.0.1:10050', timeout=5):
+def getExternalIP(reactor=reactor, server='tcp:46.101.132.244:10050', timeout=5):
+    """Connect to the remote server, wait for it to respond with our IP
+
+    Nb. this is a coroutine.
+
+    Args:
+        reactor : a twisted reactor
+        server (str): strports description of the server, eg. "tcp:1.2.3.4:8080"
+                      OR a tuple: the server address of (host, port)
+        timeout (float): seconds to wait before giving up
+
+    Returns:
+        Deferred(str): our external ip in dotted format, or None
+    """
     endpoint = _getClientEndpoint(reactor, server)
 
     response, port = yield makeServer(reactor)
