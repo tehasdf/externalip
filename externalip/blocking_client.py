@@ -65,7 +65,7 @@ def do_loop(listeningSocket, connectingSocket, timeout=5):
             to_write.remove(sock)
 
 
-def get_external_ip(server, timeout):
+def get_external_ip(server, timeout=5):
     """Connect to the remote server, wait for it to respond with our IP
 
     Args:
